@@ -21,12 +21,13 @@ Redis 提供了丰富的数据类型，常见的有五种：
 
 redis对象和底层数据结构关系:
 
-![image-20231128222451523](/Users/tangke/Library/Application Support/typora-user-images/image-20231128222451523.png)
+![image-20231128222451523](../pictures/image-20231128222451523.png)
 
 redis全局数据结构组织图：
 
-![image-20231128222943221](/Users/tangke/Library/Application Support/typora-user-images/image-20231128222943221.png)
+![image-20231128222943221](../pictures/image-20231128222943221.png)
 
 redis对象：
 
-![image-20231128223217530](/Users/tangke/Library/Application Support/typora-user-images/image-20231128223217530.png)
+![image-20231128223217530](../pictures/image-20231128223217530.png)
+
