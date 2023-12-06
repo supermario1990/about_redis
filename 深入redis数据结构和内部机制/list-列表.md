@@ -51,3 +51,32 @@ encoding 属性的空间大小跟数据是字符串还是整数，以及字符�
 
 ## quicklist
 
+其实 quicklist 就是「双向链表 + 压缩列表」组合，因为一个 quicklist 就是一个链表，而链表中的每个元素又是一个压缩列表。
+
+![img](https://cdn.xiaolincoding.com//mysql/other/f46cbe347f65ded522f1cc3fd8dba549.png)
+
+在向 quicklist 添加一个元素的时候，不会像普通的链表那样，直接新建一个链表节点。而是会检查插入位置的压缩列表是否能容纳该元素，如果能容纳就直接保存到 quicklistNode 结构里的压缩列表，如果不能容纳，才会新建一个新的 quicklistNode 结构。
+
+quicklist 会控制 quicklistNode 结构里的压缩列表的大小或者元素个数，来规避潜在的连锁更新的风险，但是这并没有完全解决连锁更新的问题。
+
+## listpack
+
+listpack 采用了压缩列表的很多优秀的设计，比如还是用一块连续的内存空间来紧凑地保存数据，并且为了节省内存的开销，listpack 节点会采用不同的编码方式保存不同大小的数据。
+
+我们先看看 listpack 结构：
+
+![img](https://cdn.xiaolincoding.com//mysql/other/4d2dc376b5fd68dae70d9284ae82b73a.png)
+
+listpack 头包含两个属性，分别记录了 listpack 总字节数和元素数量，然后 listpack 末尾也有个结尾标识。图中的 listpack entry 就是 listpack 的节点了。
+
+每个 listpack 节点结构如下：
+
+![img](https://cdn.xiaolincoding.com//mysql/other/c5fb0a602d4caaca37ff0357f05b0abf.png)
+
+主要包含三个方面内容：
+
+- encoding，定义该元素的编码类型，会对不同长度的整数和字符串进行编码；
+- data，实际存放的数据；
+- len，encoding+data的总长度；
+
+可以看到，**listpack 没有压缩列表中记录前一个节点长度的字段了，listpack 只记录当前节点的长度，当我们向 listpack 加入一个新元素的时候，不会影响其他节点的长度字段的变化，从而避免了压缩列表的连锁更新问题**。
